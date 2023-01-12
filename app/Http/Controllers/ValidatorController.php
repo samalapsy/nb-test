@@ -8,12 +8,32 @@ use Illuminate\Support\Str;
 
 class ValidatorController extends Controller
 {
+    /**
+     * Current payload validation  key
+     *
+     * @var string
+     */
     private string $payloadKey;
 
+    /**
+     * Supported validation rules
+     *
+     * @var array
+     */
     private array $supportedRules =  [ 'alpha', 'required', 'email', 'number'];
 
+    /**
+     * The errors to be returend to the user.
+     *
+     * @var array
+     */
     private array $errorBag = [];
     
+    /**
+     * Default error messag for specified rules
+     *
+     * @var array
+     */
     private array $errorMessages = [
         'alpha' => ':attr must be only letters',
         'number' => ':attr must be a number',
@@ -21,6 +41,11 @@ class ValidatorController extends Controller
         'required' => ':attr is required',
     ];
 
+    /**
+     * Accept a structured payload and validates it.
+     *
+     * @return response()
+     */
     public function __invoke()
     {
         $payload = request()->all();
@@ -51,9 +76,16 @@ class ValidatorController extends Controller
     }
 
     
+    /**
+     * Handles the main
+     *
+     * @param [any] $rule
+     * @param [any] $value
+     * @return void
+     */
     private function validationHandler($rule, $value)
     {
-        if (empty($rule)) {
+        if (!$rule) {
             return ;
         }
 
@@ -68,30 +100,54 @@ class ValidatorController extends Controller
         }
     }
 
+    /**
+     * Get actual content of the rules key
+     *
+     * @param array $data
+     * @return void
+     */
     private function getRules(array $data)
     {
-        if (!isset($data['rules']) || empty($data['rules'])) {
+        if (!isset($data['rules']) || !$data['rules']) {
             return  null;
         }
 
         return $data['rules'];
     }
     
+    /**
+     * Get actual content of the value key
+     *
+     * @param array $data
+     * @return any
+     */
     private function getValues(array $data)
     {
-        if (!isset($data['value']) || empty($data['value'])) {
+        if (!isset($data['value']) || !$data['value']) {
             return null;
         }
 
         return $data['value'];
     }
 
+    /**
+     * Determine if rule is supported
+     *
+     * @param string $rule
+     * @return boolean
+     */
     private function isRuleSupported(string $rule)
     {
         return in_array($rule, $this->supportedRules);
     }
 
-    private function findUnsupportedRules($rules)
+    /**
+     * Append unsupported rules to error bag
+     *
+     * @param array $rules
+     * @return string
+     */
+    private function findUnsupportedRules(array $rules)
     {
         $unsupportedRules = array_diff($rules, $this->supportedRules);
 
@@ -102,25 +158,43 @@ class ValidatorController extends Controller
         }
     }
 
+    /**
+     * Remove unwanted characters
+     *
+     * @param [any] $val
+     * @return string
+     */
     private function sanitizeInput($val)
     {
         return filter_var(filter_var($val, FILTER_SANITIZE_SPECIAL_CHARS), FILTER_SANITIZE_ENCODED);
     }
 
-    private function getErrorMessage($rule)
+    /**
+     * Returns an error message
+     *
+     * @param [string] $rule
+     * @return string
+     */
+    private function getErrorMessage(string $rule)
     {
         if (!$rule) {
             return 'The :rules key is not provided';
         }
 
         if (!$this->isRuleSupported($rule)) {
-            return ":$rule rule is not supported";
+            return "$rule rule is not supported";
         }
 
         return $this->errorMessages[$rule];
     }
 
 
+    /**
+     * Number validation rule
+     *
+     * @param [any] $val
+     * @return $this
+     */
     protected function __number($val)
     {
         $val = $this->sanitizeInput($val);
@@ -132,6 +206,12 @@ class ValidatorController extends Controller
         return $this;
     }
     
+    /**
+     * Alpha validation rule
+     *
+     * @param [any] $val
+     * @return $this
+     */
     protected function __alpha($val)
     {
         $val = $this->sanitizeInput($val);
@@ -145,6 +225,12 @@ class ValidatorController extends Controller
         return $this;
     }
 
+    /**
+     * Email validation rule
+     *
+     * @param [type] $val
+     * @return $this
+     */
     protected function __email($val)
     {
         $val = filter_var(filter_var($val, FILTER_SANITIZE_EMAIL), FILTER_VALIDATE_EMAIL);
@@ -156,6 +242,12 @@ class ValidatorController extends Controller
         return $this;
     }
     
+    /**
+     * Required validation rule
+     *
+     * @param [type] $val
+     * @return void
+     */
     protected function __required($val)
     {
         if (empty($val)) {
@@ -165,6 +257,13 @@ class ValidatorController extends Controller
         return $this;
     }
     
+    /**
+     * Add error message into error bag
+     *
+     * @param [type] $attribute
+     * @param string|null $message
+     * @return void
+     */
     protected function __error($attribute, string $message = null)
     {
         $key = $this->payloadKey;
@@ -175,10 +274,8 @@ class ValidatorController extends Controller
 
         if (Arr::has($this->errorBag, $key)) {
             $this->errorBag[$key] = array_merge((array) $this->errorBag[$key], [$message]);
-            
-            return $this;
+        } else {
+            $this->errorBag[$key] = [$message];
         }
-
-        $this->errorBag[$key] = [$message];
     }
 }
