@@ -34,3 +34,14 @@ The following requirements exists for the endpoint
 
 ### How to submit
 Make a public repo with your Laravel API and share the public link when done
+
+
+### To test
+Using the above payload format, on your postman send a `POST` request to https://nb-test.herokuapp.com/api/validator then WYSIWYG :winks
+
+
+### Improvements
+As the requirements grows, we can consider the following improvements
+* Move all validation rules in the controller into a ValidationTrait which can be used in the controller.
+* Create a config file to hold the custom error messages.
+* On the long run we can optimize the code based on what's needed so we can follow the KISS & YAGNI principle as application.
