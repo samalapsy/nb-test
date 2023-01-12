@@ -38,12 +38,13 @@ Make a public repo with your Laravel API and share the public link when done
 
 ### Installation 
 It's assumed that PHP & Laravel is installed and configured on your machine; if this is assumption is false, please [setup Laravel] (https://laravel.com/docs/9.x/installation) on your machine.
-After cloning this branch run the following commands
+After cloning this repo, run the following commands:
+
 * `composer install`
 * `php artisan serve`
 
 ### Test
-Using the above payload format, on your postman send a `POST` request to  and the validation rules required above is trigged. Once that is done, WYSIWYG 😉
+Using the above payload format, on your postman send a `POST` request to https://nb-test.herokuapp.com/api/validator  and the validation rules required above is trigged. Once that is done, WYSIWYG 😉
 
 
 ### Improvements
