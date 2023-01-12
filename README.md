@@ -49,6 +49,6 @@ Using the above payload format, on your postman send a `POST` request to https:/
 
 ### Improvements
 As the requirements grows, we can consider the following
-* Move all validation rules out of the controller into a new class which can be used in the controller.
+* Move all validation rules out of the controller into a separate class which can be used in the controller.
 * Create a config file which will contains the error messages for each rules.
 * On the long run we can optimize the code based on what's needed so we can follow the KISS & YAGNI principle as application
